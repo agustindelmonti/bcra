@@ -1,9 +1,30 @@
 "use client";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import { Line } from "react-chartjs-2";
 import { TimeSeriesData } from "@/types/bcra";
 import ChartSkeleton from "./ChartSkeleton";
 import { TRANSLATIONS, formatNumber, formatDate } from "@/utils/localization";
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 // Chart configuration
 const chartOptions = {
@@ -68,7 +89,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
       <h2 className="text-xl font-semibold mb-4">
         {TRANSLATIONS.dashboard.charts.reserves.title}
       </h2>
-      <div className="h-[600px]">
+      <div style={{ height: "600px" }}>
         <Line options={chartOptions as any} data={chartData} />
       </div>
     </div>
