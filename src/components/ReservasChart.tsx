@@ -33,19 +33,19 @@ interface ReservasChartProps {
 export default function ReservasChart({ data, loading }: ReservasChartProps) {
   if (loading) return <ChartSkeleton />;
 
-  // Sort data in reverse chronological order
   const sortedData = [...data].sort(
-    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
   );
 
   const chartData = {
     labels: sortedData.map((item) => item.fecha),
     datasets: [
       {
-        label: "Reservas Internacionales",
+        label: "Reservas Internacionales (Millones USD)",
         data: sortedData.map((item) => item.valor),
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.5)",
+        tension: 0.3, // Add some curve to the line
       },
     ],
   };
@@ -57,10 +57,19 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
       legend: {
         position: "top" as const,
       },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => `${context.parsed.y.toFixed(2)}M USD`,
+        },
+      },
     },
     scales: {
       y: {
-        beginAtZero: true,
+        beginAtZero: false, // Don't force axis to start at zero
+        grace: "5%", // Add some padding to the scale
+        ticks: {
+          callback: (value: number) => `${value.toFixed(1)}M`,
+        },
       },
     },
   };
@@ -69,7 +78,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
     <div className="bg-white rounded-lg p-6 shadow">
       <h2 className="text-xl font-semibold mb-4">Reservas Internacionales</h2>
       <div className="h-72">
-        <Line options={options} data={chartData} />
+        <Line options={options as any} data={chartData} />
       </div>
     </div>
   );
