@@ -1,8 +1,29 @@
 "use client";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import { Line } from "react-chartjs-2";
 import { TimeSeriesData } from "@/types/bcra";
 import ChartSkeleton from "./ChartSkeleton";
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface ReservasChartProps {
   data: TimeSeriesData[];
@@ -12,12 +33,17 @@ interface ReservasChartProps {
 export default function ReservasChart({ data, loading }: ReservasChartProps) {
   if (loading) return <ChartSkeleton />;
 
+  // Sort data in reverse chronological order
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+  );
+
   const chartData = {
-    labels: data.map((item) => item.fecha),
+    labels: sortedData.map((item) => item.fecha),
     datasets: [
       {
         label: "Reservas Internacionales",
-        data: data.map((item) => item.valor),
+        data: sortedData.map((item) => item.valor),
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.5)",
       },
