@@ -30,6 +30,13 @@ interface ReservasChartProps {
   loading: boolean;
 }
 
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("es-AR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
+
 export default function ReservasChart({ data, loading }: ReservasChartProps) {
   if (loading) return <ChartSkeleton />;
 
@@ -59,7 +66,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.parsed.y.toFixed(2)}M USD`,
+          label: (context: any) => `${formatNumber(context.parsed.y)}M USD`,
         },
       },
     },
@@ -68,7 +75,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
         beginAtZero: false, // Don't force axis to start at zero
         grace: "5%", // Add some padding to the scale
         ticks: {
-          callback: (value: number) => `${value.toFixed(1)}M`,
+          callback: (value: number) => `${formatNumber(value)}M`,
         },
       },
     },
