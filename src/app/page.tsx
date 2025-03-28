@@ -1,14 +1,11 @@
 "use client";
 
-import { Card, Title, LineChart } from "@tremor/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { ResponseData, TimeSeriesData } from "@/types/bcra";
+import ReservasChart from "@/components/ReservasChart";
 import { format } from "date-fns";
-
-interface TimeSeriesData {
-  d: string; // date
-  v: number; // value
-}
+import SampleChart from "@/components/SampleChart";
 
 export default function Home() {
   const [exchangeRate, setExchangeRate] = useState<TimeSeriesData[]>([]);
@@ -17,8 +14,8 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "https://api.bcra.gov.ar/series/v1/series/usd_of/datos/2023-01-01/2024-03-28",
+        const response = await axios.get<ResponseData>(
+          "https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/1",
           {
             headers: {
               Authorization: process.env.NEXT_PUBLIC_BCRA_TOKEN,
@@ -26,9 +23,9 @@ export default function Home() {
           }
         );
 
-        const formattedData = response.data.map((item: TimeSeriesData) => ({
-          date: format(new Date(item.d), "MMM dd, yyyy"),
-          "USD/ARS": item.v,
+        const formattedData = response.data.results.map((item) => ({
+          fecha: format(new Date(item.fecha), "yyyy-MM-dd"),
+          valor: item.valor,
         }));
 
         setExchangeRate(formattedData);
@@ -44,26 +41,23 @@ export default function Home() {
 
   return (
     <div className="p-4 md:p-10 mx-auto max-w-7xl">
-      <Title>BCRA Dashboard</Title>
       <div className="mt-6">
-        <Card>
-          <Title>USD/ARS Exchange Rate</Title>
-          {loading ? (
-            <div className="h-72 flex items-center justify-center">
-              <p>Loading...</p>
-            </div>
-          ) : (
-            <LineChart
-              className="h-72 mt-4"
-              data={exchangeRate}
-              index="date"
-              categories={["USD/ARS"]}
-              colors={["blue"]}
-              yAxisWidth={48}
-              showAnimation
+        <div className="bg-white rounded-lg p-6 shadow">
+          <h2 className="text-xl font-semibold mb-4">Sample Chart</h2>
+          <div className="h-72">
+            <SampleChart
+              data={[
+                { fecha: "2023-01-01", sales: 100, profit: 80 },
+                { fecha: "2023-02-01", sales: 120, profit: 90 },
+                { fecha: "2023-03-01", sales: 150, profit: 110 },
+              ]}
             />
-          )}
-        </Card>
+          </div>
+        </div>
+      </div>
+      <h1 className="text-2xl font-bold mt-8">BCRA Dashboard</h1>
+      <div className="mt-6">
+        <ReservasChart data={exchangeRate} loading={loading} />
       </div>
     </div>
   );
