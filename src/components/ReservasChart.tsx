@@ -13,6 +13,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { TimeSeriesData } from "@/types/bcra";
 import ChartSkeleton from "./ChartSkeleton";
+import { TRANSLATIONS, formatNumber, formatDate } from "@/utils/localization";
 
 // Register ChartJS components
 ChartJS.register(
@@ -30,13 +31,6 @@ interface ReservasChartProps {
   loading: boolean;
 }
 
-const formatNumber = (value: number) => {
-  return new Intl.NumberFormat("es-AR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
-
 export default function ReservasChart({ data, loading }: ReservasChartProps) {
   if (loading) return <ChartSkeleton />;
 
@@ -45,11 +39,11 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
   );
 
   const chartData = {
-    labels: sortedData.map((item) => item.fecha),
+    labels: sortedData.map((item) => formatDate(item.fecha)),
     datasets: [
       {
-        label: "Reservas Internacionales (Millones USD)",
-        data: sortedData.map((item) => item.valor),
+        label: `${TRANSLATIONS.dashboard.charts.reserves.title} (${TRANSLATIONS.dashboard.charts.reserves.yAxisLabel})`,
+        data: sortedData.map((item) => item.valor / 1000000),
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.5)",
         tension: 0.3, // Add some curve to the line
@@ -66,7 +60,10 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${formatNumber(context.parsed.y)}M USD`,
+          label: (context: any) =>
+            `${formatNumber(context.parsed.y)} ${
+              TRANSLATIONS.dashboard.charts.reserves.tooltip
+            }`,
         },
       },
     },
@@ -83,9 +80,27 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
 
   return (
     <div className="bg-white rounded-lg p-6 shadow">
-      <h2 className="text-xl font-semibold mb-4">Reservas Internacionales</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {TRANSLATIONS.dashboard.charts.reserves.title}
+      </h2>
       <div className="h-72">
-        <Line options={options as any} data={chartData} />
+        <Line
+          options={{
+            ...options,
+            scales: {
+              y: {
+                beginAtZero: false,
+                grace: "5%",
+                ticks: {
+                  callback: function (this: any, value: number | string) {
+                    return `${formatNumber(Number(value))}M`;
+                  },
+                },
+              },
+            },
+          }}
+          data={chartData}
+        />
       </div>
     </div>
   );

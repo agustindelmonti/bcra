@@ -6,6 +6,7 @@ import { ResponseData, TimeSeriesData } from "@/types/bcra";
 import ReservasChart from "@/components/ReservasChart";
 import { format, subMonths } from "date-fns";
 import { DateRangePicker, DateRangePickerValue } from "@tremor/react";
+import { TRANSLATIONS, dateLocale, formatDate } from "@/utils/localization";
 
 const BCRA_API_CONFIG = {
   baseUrl: "https://api.bcra.gob.ar/estadisticas/v3.0",
@@ -78,14 +79,17 @@ export default function Home() {
 
   return (
     <div className="p-4 md:p-10 mx-auto max-w-7xl">
-      <h1 className="text-2xl font-bold mt-8">BCRA Dashboard</h1>
+      <h1 className="text-2xl font-bold mt-8">
+        {TRANSLATIONS.dashboard.title}
+      </h1>
       <div className="mt-6">
         <div className="mb-6">
           <DateRangePicker
             className="max-w-md"
             value={dateRange}
             onValueChange={handleDateRangeChange}
-            placeholder="Select date range"
+            placeholder={TRANSLATIONS.dashboard.dateRangePlaceholder}
+            locale={dateLocale}
           />
         </div>
         <ReservasChart data={exchangeRate} loading={loading} />
