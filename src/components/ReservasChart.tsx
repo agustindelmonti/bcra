@@ -35,7 +35,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
   if (loading) return <ChartSkeleton />;
 
   const sortedData = [...data].sort(
-    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
   );
 
   const chartData = {
@@ -43,7 +43,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
     datasets: [
       {
         label: `${TRANSLATIONS.dashboard.charts.reserves.title} (${TRANSLATIONS.dashboard.charts.reserves.yAxisLabel})`,
-        data: sortedData.map((item) => item.valor / 1000000),
+        data: sortedData.map((item) => item.valor),
         borderColor: "rgb(59, 130, 246)",
         backgroundColor: "rgba(59, 130, 246, 0.5)",
         tension: 0.3, // Add some curve to the line
@@ -83,7 +83,7 @@ export default function ReservasChart({ data, loading }: ReservasChartProps) {
       <h2 className="text-xl font-semibold mb-4">
         {TRANSLATIONS.dashboard.charts.reserves.title}
       </h2>
-      <div className="h-72">
+      <div style={{ height: "400px" }}>
         <Line
           options={{
             ...options,
