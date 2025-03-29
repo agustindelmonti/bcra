@@ -80,22 +80,7 @@ export default function Home() {
 
   return (
     <div className="p-4 md:p-10 mx-auto max-w-7xl">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold mt-8">
-          {TRANSLATIONS.dashboard.title}
-        </h1>
-        <LocaleButton />
-      </div>
       <div className="mt-6">
-        <div className="mb-6">
-          <DateRangePicker
-            className="max-w-md"
-            value={dateRange}
-            onValueChange={handleDateRangeChange}
-            placeholder={TRANSLATIONS.dashboard.dateRangePlaceholder}
-            locale={dateLocale}
-          />
-        </div>
         <ReservasChart data={exchangeRate} loading={loading} />
       </div>
     </div>
